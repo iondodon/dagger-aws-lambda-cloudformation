@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  localstack:
+    container_name: localstack
+    image: localstack/localstack:4.0.3
+    ports:
+      - "127.0.0.1:4510-4559:4510-4559"  # external service port range
+      - "127.0.0.1:4566:4566"            # LocalStack Edge Proxy
+    environment:
+      - LOCALSTACK_HOST=localhost.localstack.cloud  # set this env var to expose localstack to other containers
+      - AWS_ACCESS_KEY_ID=key
+      - AWS_SECRET_ACCESS_KEY=secret
+      - AWS_DEFAULT_REGION=eu-west-1
+      - LAMBDA_EXECUTOR=docker
+      - SERVICES=cloudformation,s3,dynamodb,sns,sqs,lambda,events,iam,cloudwatch
+      - DEBUG=true
+    volumes:
+      - "$PWD/tmp/localstack:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "$PWD/target:/target"
+    networks:
+      default:
+        aliases:
+          - localhost.localstack.cloud   # set this network aliases to expose localstack to other containers
